@@ -12,4 +12,4 @@ def main():
         preparer=ImagePreparer(),
         processor=ImageProcessor()
     )
-    app.run(sys.argv)
+    app.run(sys.argv[1:])
