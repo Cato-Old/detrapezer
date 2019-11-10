@@ -7,9 +7,9 @@ from app.input import ImagePreparer
 from app.processing import ImageProcessor
 
 
-class AppComposingTest(TestCase):
+class AppTest(TestCase):
     def setUp(self):
-        self.cli = Mock(CLI)
+        self.cli = Mock(CLI, autospec=True)
         self.preparer = Mock(ImagePreparer)
         self.processor = Mock(ImageProcessor)
         self.app = compose(
@@ -29,3 +29,8 @@ class AppComposingTest(TestCase):
 
     def test_has_app_processor(self):
         self.assertIs(self.app.processor, self.processor)
+
+    def test_cli_parse_arguments_when_app_run(self):
+        args = [r'C:\foo\bar.baz']
+        self.app.run(args)
+        self.cli.parse.assert_called_once_with(args)
