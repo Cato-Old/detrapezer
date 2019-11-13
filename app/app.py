@@ -18,6 +18,7 @@ class App:
 
     def run(self, args: List[str]) -> None:
         self.cli.parse(args)
+        self.preparer.prepare(self.cli.args.path)
 
 
 def compose(

@@ -32,5 +32,12 @@ class AppTest(TestCase):
 
     def test_cli_parse_arguments_when_app_run(self):
         args = [r'C:\foo\bar.baz']
+        self.cli.args = Mock(path=args[0])
         self.app.run(args)
         self.cli.parse.assert_called_once_with(args)
+
+    def test_image_preparer_process_image_when_app_runs(self):
+        path = '../tests/resources/specimen.tif'
+        self.cli.args = Mock(path=path)
+        self.app.run([path])
+        self.preparer.prepare.assert_called_once_with(path)
