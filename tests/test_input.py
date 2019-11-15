@@ -16,9 +16,13 @@ class ImagePreparerTest(TestCase):
         actual = self.preparer.image
         self.assertTrue(np.array_equal(expected, actual))
 
-    def test_raises_exception_when_no_set_image(self):
-        with self.assertRaises(ValueError):
+    def test_raises_exception_when_no_image_set(self):
+        with self.assertRaises(AttributeError):
             _ = self.preparer.image
+
+    def test_raises_exception_when_no_scale_set(self):
+        with self.assertRaises(AttributeError):
+            _ = self.preparer.scale
 
     def test_can_prepare_image(self):
         expected = cv2.imread(r'./resources/prepared.tif', cv2.IMREAD_UNCHANGED)
