@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 import cv2
-import numpy as np
+from numpy.testing import assert_array_equal
 
 from app.processing import ImageProcessor
 
@@ -15,6 +15,6 @@ class ImageProcessorTest(TestCase):
         original = cv2.imread('./resources/specimen.tif', cv2.IMREAD_UNCHANGED)
         actual = self.processor.process(image, original)
         expected = cv2.imread('./resources/processed.tif', cv2.IMREAD_UNCHANGED)
-        self.assertTrue(np.array_equal(expected, actual))
+        assert_array_equal(expected, actual)
 
 

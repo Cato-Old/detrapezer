@@ -3,6 +3,7 @@ from unittest.mock import Mock, PropertyMock
 
 import cv2
 import numpy as np
+from numpy.testing import assert_array_equal
 
 from app.app import compose, App
 from app.cli import CLI
@@ -72,5 +73,5 @@ class AppTest(TestCase):
         self.app.run([self.res_paths['specimen']])
         self.processor.process.assert_called_once()
         mock_args = self.processor.process.call_args
-        self.assertTrue(np.array_equal(self.res['prepared'], mock_args[0][0]))
-        self.assertTrue(np.array_equal(self.res['specimen'], mock_args[0][1]))
+        assert_array_equal(self.res['prepared'], mock_args[0][0])
+        assert_array_equal(self.res['specimen'], mock_args[0][1])
