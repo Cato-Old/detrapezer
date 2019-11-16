@@ -18,7 +18,9 @@ class App:
 
     def run(self, args: List[str]) -> None:
         self.cli.parse(args)
-        self.preparer.prepare(self.cli.args.path)
+        prepared_image = self.preparer.prepare(self.cli.args.path)
+        original_image = self.preparer.image
+        self.processor.process(prepared_image, original_image)
 
 
 def compose(

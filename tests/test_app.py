@@ -1,5 +1,8 @@
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import Mock, PropertyMock
+
+import cv2
+import numpy as np
 
 from app.app import compose, App
 from app.cli import CLI
@@ -41,3 +44,18 @@ class AppTest(TestCase):
         self.cli.args = Mock(path=path)
         self.app.run([path])
         self.preparer.prepare.assert_called_once_with(path)
+
+    def test_image_processor_process_image_when_app_runs(self):
+        path = '../tests/resources/specimen.tif'
+        prepared = cv2.imread(
+            '../tests/resources/prepared.tif', cv2.IMREAD_UNCHANGED
+        )
+        original = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+        self.cli.args = Mock(path=path)
+        self.preparer.prepare = Mock(return_value=prepared)
+        type(self.preparer).image = PropertyMock(return_value=original)
+        self.app.run([path])
+        self.processor.process.assert_called_once()
+        mock_args = self.processor.process.call_args
+        self.assertTrue(np.array_equal(prepared, mock_args[0][0]))
+        self.assertTrue(np.array_equal(original, mock_args[0][1]))
