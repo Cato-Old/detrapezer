@@ -30,5 +30,5 @@ class ImagePreparer:
             dim = (width * self._scale, height * self._scale)
             image = cv2.resize(image, dim)
         else:
-            self._scale = 1
+            self._scale = 1.0
         return image

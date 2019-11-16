@@ -20,7 +20,8 @@ class App:
         self.cli.parse(args)
         prepared_image = self.preparer.prepare(self.cli.args.path)
         original_image = self.preparer.image
-        self.processor.process(prepared_image, original_image)
+        scale = self.preparer.scale
+        self.processor.process(prepared_image, original_image, scale)
 
 
 def compose(
