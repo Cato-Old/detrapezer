@@ -6,7 +6,12 @@ from numpy.core.multiarray import ndarray
 
 
 class ImageProcessor:
-    def process(self, prepared_image: ndarray, original_image: ndarray, scale: double):
+    def process(
+            self,
+            prepared_image: ndarray,
+            original_image: ndarray,
+            scale: float,
+    ) -> ndarray:
         contours, _ = cv2.findContours(
             prepared_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE,
         )
@@ -24,8 +29,10 @@ class ImageProcessor:
             [[x1, y1], [x1, y1 + y2], [x1 + x2, y1 + y2], [x1 + x2, y1]],
             dtype='float32')
         matrix = cv2.getPerspectiveTransform(src * 1/scale, dst * 1/scale)
-        image = cv2.warpPerspective(original_image, matrix,
-                                    (image.shape[1], image.shape[0]))
+        image = cv2.warpPerspective(
+            original_image, matrix,
+            (original_image.shape[1], original_image.shape[0])
+        )
         return image
 
     @staticmethod

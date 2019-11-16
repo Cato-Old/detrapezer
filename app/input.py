@@ -24,10 +24,10 @@ class ImagePreparer:
         return cv2.cvtColor(self._image, cv2.COLOR_BGR2GRAY)
 
     def _rescale_image(self, image: ndarray) -> ndarray:
-        if image.shape[1] < 800:
+        if image.shape[1] > 800:
             height, width = image.shape
             self._scale = 800 / width
-            dim = (width * self._scale, height * self._scale)
+            dim = (round(width * self._scale), round(height * self._scale))
             image = cv2.resize(image, dim)
         else:
             self._scale = 1.0
