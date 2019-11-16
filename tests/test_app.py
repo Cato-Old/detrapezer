@@ -12,14 +12,38 @@ from app.processing import ImageProcessor
 
 class AppTest(TestCase):
     def setUp(self):
-        self.cli = Mock(CLI, autospec=True)
-        self.preparer = Mock(ImagePreparer)
-        self.processor = Mock(ImageProcessor)
+        self.res_paths = {
+            k: f'../tests/resources/{k}.tif'
+            for k in ('prepared', 'specimen', 'processed')
+        }
+        self.res = {
+            k: cv2.imread(v, cv2.IMREAD_UNCHANGED)
+            for k, v in self.res_paths.items()
+        }
+        self.cli = self._configure_cli_mock()
+        self.preparer = self._configure_preparer_mock()
+        self.processor = self._configure_processor_mock()
         self.app = compose(
             cli=self.cli,
             preparer=self.preparer,
             processor=self.processor,
         )
+
+    def _configure_preparer_mock(self) -> Mock:
+        preparer = Mock(ImagePreparer)
+        preparer.prepare = Mock(return_value=self.res['prepared'])
+        type(preparer).image = PropertyMock(return_value=self.res['specimen'])
+        return preparer
+
+    def _configure_cli_mock(self) -> Mock:
+        cli = Mock(CLI, autospec=True)
+        cli.args = Mock(path=self.res_paths['specimen'], output=None)
+        return cli
+
+    def _configure_processor_mock(self) -> Mock:
+        processor = Mock(ImageProcessor)
+        processor.process = Mock(return_value=self.res['processed'])
+        return processor
 
     def test_compose_app(self):
         self.assertIsInstance(self.app, App)
@@ -35,27 +59,18 @@ class AppTest(TestCase):
 
     def test_cli_parse_arguments_when_app_run(self):
         args = [r'C:\foo\bar.baz']
-        self.cli.args = Mock(path=args[0])
+        self.cli.args.path = args[0]
         self.app.run(args)
         self.cli.parse.assert_called_once_with(args)
 
     def test_image_preparer_process_image_when_app_runs(self):
-        path = '../tests/resources/specimen.tif'
-        self.cli.args = Mock(path=path)
+        path = self.res_paths['specimen']
         self.app.run([path])
         self.preparer.prepare.assert_called_once_with(path)
 
     def test_image_processor_process_image_when_app_runs(self):
-        path = '../tests/resources/specimen.tif'
-        prepared = cv2.imread(
-            '../tests/resources/prepared.tif', cv2.IMREAD_UNCHANGED
-        )
-        original = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-        self.cli.args = Mock(path=path)
-        self.preparer.prepare = Mock(return_value=prepared)
-        type(self.preparer).image = PropertyMock(return_value=original)
-        self.app.run([path])
+        self.app.run([self.res_paths['specimen']])
         self.processor.process.assert_called_once()
         mock_args = self.processor.process.call_args
-        self.assertTrue(np.array_equal(prepared, mock_args[0][0]))
-        self.assertTrue(np.array_equal(original, mock_args[0][1]))
+        self.assertTrue(np.array_equal(self.res['prepared'], mock_args[0][0]))
+        self.assertTrue(np.array_equal(self.res['specimen'], mock_args[0][1]))
