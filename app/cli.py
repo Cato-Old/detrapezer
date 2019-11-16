@@ -6,6 +6,7 @@ class CLI:
     def __init__(self) -> None:
         self.parser = ArgumentParser()
         self.parser.add_argument('path')
+        self.parser.add_argument('-o', '--output')
         self.args = None
 
     def parse(self, args: List[str]) -> None:
