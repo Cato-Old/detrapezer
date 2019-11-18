@@ -20,6 +20,20 @@ class CLITest(TestCase):
                 self.cli.parse(args)
                 self.assertEqual(args[2], self.cli.args.output)
 
+    def test_can_parse_debug_flag(self):
+        args = [r'C:\foo\bar.bas', '']
+        for flag in ['-d', '--debug']:
+            with self.subTest(flag):
+                args[1] = flag
+                self.cli.parse(args)
+                self.assertIsInstance(self.cli.args.debug, bool)
+                self.assertTrue(self.cli.args.debug)
+
+    def test_can_set_debug_flag_false_when_no_arg(self):
+        args = [r'C:\foo\bar.bas']
+        self.cli.parse(args)
+        self.assertFalse(self.cli.args.debug)
+
     def test_exit_app_when_no_path_argument(self):
         args = []
         with self.assertRaises(SystemExit):

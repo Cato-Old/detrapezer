@@ -7,6 +7,7 @@ class CLI:
         self.parser = ArgumentParser()
         self.parser.add_argument('path')
         self.parser.add_argument('-o', '--output')
+        self.parser.add_argument('-d', '--debug', action='store_true')
         self.args = None
 
     def parse(self, args: List[str]) -> None:
