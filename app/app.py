@@ -25,6 +25,8 @@ class App:
         self.cli.parse(args)
         self.settings.debug_mode = self.cli.args.debug
         prepared_image = self.preparer.prepare(self.cli.args.path)
+        if self.settings.debug_mode:
+            cv2.imwrite('debug.tif', prepared_image)
         original_image = self.preparer.image
         scale = self.preparer.scale
         processed = self.processor.process(

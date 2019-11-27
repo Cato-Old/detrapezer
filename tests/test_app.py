@@ -1,3 +1,5 @@
+import os
+import shutil
 from unittest import TestCase
 from unittest.mock import Mock, PropertyMock
 
@@ -87,3 +89,14 @@ class AppTest(TestCase):
     def test_settings_has_debug_mode_set_from_cli_arg(self):
         self.app.run([self.res_paths['specimen']])
         self.assertEqual(self.settings.debug_mode, self.cli.args.debug)
+
+    def test_app_saves_prepared_image_in_debug_mode(self):
+        self.app.run([self.res_paths['specimen'], '-d'])
+        self.assertTrue(os.path.exists('debug.tif'))
+
+    def tearDown(self):
+        for file in ('debug.tif', 'out.tif'):
+            try:
+                os.remove(file)
+            except FileNotFoundError:
+                pass
