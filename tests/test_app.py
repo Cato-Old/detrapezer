@@ -9,6 +9,7 @@ from app.app import compose, App
 from app.cli import CLI
 from app.input import ImagePreparer
 from app.processing import ImageProcessor
+from app.settings import Settings
 
 
 class AppTest(TestCase):
@@ -24,10 +25,12 @@ class AppTest(TestCase):
         self.cli = self._configure_cli_mock()
         self.preparer = self._configure_preparer_mock()
         self.processor = self._configure_processor_mock()
+        self.settings = Mock(Settings)
         self.app = compose(
             cli=self.cli,
             preparer=self.preparer,
             processor=self.processor,
+            settings=self.settings,
         )
 
     def _configure_preparer_mock(self) -> Mock:
@@ -38,7 +41,9 @@ class AppTest(TestCase):
 
     def _configure_cli_mock(self) -> Mock:
         cli = Mock(CLI, autospec=True)
-        cli.args = Mock(path=self.res_paths['specimen'], output=None)
+        cli.args = Mock(
+            path=self.res_paths['specimen'], output=None, debug=True,
+        )
         return cli
 
     def _configure_processor_mock(self) -> Mock:
@@ -58,6 +63,9 @@ class AppTest(TestCase):
     def test_has_app_processor(self):
         self.assertIs(self.app.processor, self.processor)
 
+    def test_has_app_settings(self):
+        self.assertIs(self.app.settings, self.settings)
+
     def test_cli_parse_arguments_when_app_run(self):
         args = [r'C:\foo\bar.baz']
         self.cli.args.path = args[0]
@@ -75,3 +83,7 @@ class AppTest(TestCase):
         mock_args = self.processor.process.call_args
         assert_array_equal(self.res['prepared'], mock_args[0][0])
         assert_array_equal(self.res['specimen'], mock_args[0][1])
+
+    def test_settings_has_debug_mode_set_from_cli_arg(self):
+        self.app.run([self.res_paths['specimen']])
+        self.assertEqual(self.settings.debug_mode, self.cli.args.debug)
