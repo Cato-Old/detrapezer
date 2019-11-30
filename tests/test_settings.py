@@ -11,3 +11,6 @@ class SettingsTest(TestCase):
         self.settings(debug_mode=True)
         actual = self.settings()
         self.assertTrue(actual.debug_mode)
+
+    def tearDown(self):
+        self.settings.clear()

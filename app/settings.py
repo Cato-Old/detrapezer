@@ -9,3 +9,7 @@ class Settings:
     def __init__(self, debug_mode=None):
         if not hasattr(self, 'debug_mode'):
             self.debug_mode = debug_mode
+
+    @classmethod
+    def clear(cls):
+        Settings._instance = None
