@@ -15,8 +15,8 @@ class ImagePreparer:
         image = self._read_image(path)
         image = self._rescale_image(image)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-        image = cv2.erode(image, kernel, iterations=25)
-        image = cv2.dilate(image, kernel, iterations=25)
+        image = cv2.erode(image, kernel, iterations=20)
+        image = cv2.dilate(image, kernel, iterations=20)
         return cv2.bitwise_not(image)
 
     def _read_image(self, path: str) -> ndarray:
