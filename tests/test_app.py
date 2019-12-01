@@ -23,7 +23,7 @@ class AppTest(TestCase):
         }
         self.preparer = self._configure_preparer_mock()
         self.processor = self._configure_processor_mock()
-        self.settings = Mock(Settings)
+        self.settings = self._configure_settings_mock()
         self.app = self._configure_app(
             self.preparer, self.processor, self.settings,
         )
@@ -46,6 +46,15 @@ class AppTest(TestCase):
         processor = Mock(ImageProcessor)
         processor.process = Mock(return_value=self.res['processed'])
         return processor
+
+    def _configure_settings_mock(
+            self, debug_mode=False, output='',
+    ) -> Mock:
+        return Mock(
+            debug_mode=debug_mode,
+            path=self.res_paths['specimen'],
+            output=output
+        )
 
     def test_compose_app(self):
         self.assertIsInstance(self.app, App)
