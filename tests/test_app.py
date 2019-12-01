@@ -28,11 +28,17 @@ class AppTest(TestCase):
         self.preparer = self._configure_preparer_mock()
         self.processor = self._configure_processor_mock()
         self.settings = Mock(Settings)
-        self.app = compose(
-            preparer=self.preparer,
-            processor=self.processor,
-            settings=self.settings,
+        self.app = self._configure_app(
+            self.preparer, self.processor, self.settings,
         )
+
+    def _configure_app(
+            self,
+            preparer: ImagePreparer,
+            processor: ImageProcessor,
+            settings: Settings,
+    ) -> App:
+        return compose(preparer, processor, settings)
 
     def _configure_preparer_mock(self) -> Mock:
         preparer = Mock(ImagePreparer)
