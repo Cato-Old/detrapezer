@@ -9,10 +9,13 @@ from app.processing import ImageProcessor
 
 
 def main():
+    parsed = CLI().parse(sys.argv[1:])
+    settings = Settings(
+        debug_mode=parsed.debug, path=parsed.path, output=parsed.output,
+    )
     app = compose(
-        cli=CLI(),
         preparer=ImagePreparer(),
         processor=ImageProcessor(),
-        settings=Settings(),
+        settings=settings,
     )
     app.run(sys.argv[1:])
