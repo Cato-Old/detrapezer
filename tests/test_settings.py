@@ -8,6 +8,7 @@ class SettingsTest(TestCase):
         self.settings = Settings
         self.settings_val = {
             'debug_mode': True,
+            'path': r'C:\foo\bar.baz'
         }
 
     def test_can_save_state_globally(self):

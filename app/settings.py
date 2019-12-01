@@ -10,7 +10,7 @@ class Settings:
             cls._instance = object.__new__(cls)
         return cls._instance
 
-    def __init__(self, debug_mode=None):
+    def __init__(self, debug_mode=None, path=''):
         params = {
             k: v for k, v in locals().items()
             if k != 'self' and not hasattr(self.__class__, k)
