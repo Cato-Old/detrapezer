@@ -18,4 +18,4 @@ def main():
         processor=ImageProcessor(),
         settings=settings,
     )
-    app.run(sys.argv[1:])
+    app.run()

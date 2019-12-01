@@ -69,19 +69,22 @@ class AppTest(TestCase):
         self.assertIs(self.app.settings, self.settings)
 
     def test_image_preparer_process_image_when_app_runs(self):
-        path = self.res_paths['specimen']
-        self.app.run([path])
-        self.preparer.prepare.assert_called_once_with(path)
+        self.app.run()
+        self.preparer.prepare.assert_called_once_with(
+            self.res_paths['specimen']
+        )
 
     def test_image_processor_process_image_when_app_runs(self):
-        self.app.run([self.res_paths['specimen']])
+        self.app.run()
         self.processor.process.assert_called_once()
         mock_args = self.processor.process.call_args
         assert_array_equal(self.res['prepared'], mock_args[0][0])
         assert_array_equal(self.res['specimen'], mock_args[0][1])
 
     def test_app_saves_prepared_image_in_debug_mode(self):
-        self.app.run([self.res_paths['specimen'], '-d'])
+        settings = self._configure_settings_mock(debug_mode=True)
+        app = self._configure_app(self.preparer, self.processor, settings)
+        app.run()
         self.assertTrue(os.path.exists('debug.tif'))
 
     def tearDown(self):
