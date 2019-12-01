@@ -1,14 +1,11 @@
 import os
-import shutil
 from unittest import TestCase
 from unittest.mock import Mock, PropertyMock
 
 import cv2
-import numpy as np
 from numpy.testing import assert_array_equal
 
 from app.app import compose, App
-from app.cli import CLI
 from app.input import ImagePreparer
 from app.processing import ImageProcessor
 from app.settings import Settings
@@ -24,7 +21,6 @@ class AppTest(TestCase):
             k: cv2.imread(v, cv2.IMREAD_UNCHANGED)
             for k, v in self.res_paths.items()
         }
-        self.cli = self._configure_cli_mock()
         self.preparer = self._configure_preparer_mock()
         self.processor = self._configure_processor_mock()
         self.settings = Mock(Settings)
@@ -46,13 +42,6 @@ class AppTest(TestCase):
         type(preparer).image = PropertyMock(return_value=self.res['specimen'])
         return preparer
 
-    def _configure_cli_mock(self) -> Mock:
-        cli = Mock(CLI, autospec=True)
-        cli.args = Mock(
-            path=self.res_paths['specimen'], output=None, debug=True,
-        )
-        return cli
-
     def _configure_processor_mock(self) -> Mock:
         processor = Mock(ImageProcessor)
         processor.process = Mock(return_value=self.res['processed'])
@@ -60,10 +49,6 @@ class AppTest(TestCase):
 
     def test_compose_app(self):
         self.assertIsInstance(self.app, App)
-
-    def test_has_no_app_cli(self):
-        with self.assertRaises(AttributeError):
-            hasattr(self.app.cli, '')
 
     def test_has_app_preparer(self):
         self.assertIs(self.app.preparer, self.preparer)
@@ -85,10 +70,6 @@ class AppTest(TestCase):
         mock_args = self.processor.process.call_args
         assert_array_equal(self.res['prepared'], mock_args[0][0])
         assert_array_equal(self.res['specimen'], mock_args[0][1])
-
-    def test_settings_has_debug_mode_set_from_cli_arg(self):
-        self.app.run([self.res_paths['specimen']])
-        self.assertEqual(self.settings.debug_mode, self.app.cli.args.debug)
 
     def test_app_saves_prepared_image_in_debug_mode(self):
         self.app.run([self.res_paths['specimen'], '-d'])
